@@ -1,0 +1,41 @@
+#!/usr/bin/ruby
+# cucumber-shortcake
+# Martin Seidl - mseidl@suse.de
+# Under the MLLLULW license - Mega-Lesser-Lesser-Lesser-Ultra-Lesser-Whatever.
+
+if ARGV.length == 0
+  puts "Usage: shortc featurefile OR shortc featurefile +"
+  puts "Usage: Including the + includes featurefile in the list"
+  puts "Usage: Run this from the base directory of your cucumber tests"
+  exit
+end
+
+inc = false
+stop_at = ARGV[0]
+
+if ARGV.length == 2
+  inc = true if ARGV[1].include? "+"
+end
+
+run_set = 'run_sets/testsuite.yml'
+features = []
+
+File.open(run_set, 'r') do |file|
+  catch :done do
+    while line = file.gets
+      line.gsub!('- ', '').chomp!
+      if ! line.include? '#'
+        if line.include? stop_at
+          features.push(line) if inc
+          throw :done
+        end
+        features.push(line)
+      end
+    end
+  end
+end
+
+# exec exits the ruby program and replaces it with a shell call to cucumber
+cmd = "cucumber " + features.join(' ')
+puts "Now executing #{cmd}"
+exec(cmd)
