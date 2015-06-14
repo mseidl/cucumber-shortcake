@@ -2,31 +2,32 @@
 # cucumber-shortcake
 # Martin Seidl - mseidl@suse.de
 # Under the MLLLULW license - Mega-Lesser-Lesser-Lesser-Ultra-Lesser-Whatever.
+require 'optparse'
 
-if ARGV.length == 0
-  puts "Usage: shortc featurefile OR shortc featurefile +"
-  puts "Usage: Including the + includes featurefile in the list"
-  puts "Usage: Run this from the base directory of your cucumber tests"
-  exit
+options = {}
+# Default run set
+def_run_set = 'run_sets/testsuite.yml'
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: example.rb [options]"
+  opts.on('-r', '--runset RUNSET', 'Runset, default is run_sets/testsuite.yml') { |x| options[:runset] = x }
+  opts.on('-m', '--match MATCH', 'Feature file or string to search for') { |x| options[:match] = x }
+  opts.on('-i', '--include', 'Include feature') { |x| options[:include] = true if x }
+end.parse!
+
+if !options[:runset]
+  options[:runset] = def_run_set
 end
 
-inc = false
-stop_at = ARGV[0]
-
-if ARGV.length == 2
-  inc = true if ARGV[1].include? "+"
-end
-
-run_set = 'run_sets/testsuite.yml'
 features = []
 
-File.open(run_set, 'r') do |file|
+File.open(options[:runset], 'r') do |file|
   catch :done do
     while line = file.gets
       line.gsub!('- ', '').chomp!
-      if ! line.include? '#'
-        if line.include? stop_at
-          features.push(line) if inc
+      if !line.include? '#'
+        if line.include? options[:match] 
+          features.push(line) if options[:include]
           throw :done
         end
         features.push(line)
@@ -37,5 +38,5 @@ end
 
 # exec exits the ruby program and replaces it with a shell call to cucumber
 cmd = "cucumber " + features.join(' ')
-puts "Now executing #{cmd}"
+#puts "Now executing #{cmd}"
 exec(cmd)
