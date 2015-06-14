@@ -1,0 +1,51 @@
+#!/usr/bin/ruby
+# read feature file and :
+
+feat = ARGV[0]
+# List of line numbers that senarios are on
+scen_list = []
+# start at 1 as cucumber starts with 1
+counter = 1
+
+scenes = []
+File.open(feat, 'r') do |file|
+  while line = file.gets
+    if line.include?('Scenario') && !line.include?('#')
+      scen_list.push(counter)
+      scenes.push(line.chomp)
+    end
+    counter += 1
+  end
+end
+
+def loop()
+  run = true
+  counter = 0
+  failures = []
+  passed = []
+  while run
+    puts 'n(ext)|p(rev)|q(uit)|s(tatus)|r(epeat)'
+    #input = gets
+    input = $stdin.gets.chomp
+    case input
+    when 'n'
+      puts "Running #{scenes[counter]}"
+      puts "cmd is cucumber #{feat}:#{scen_list[counter]}"
+      counter += 1
+    when 'p'
+      puts 'you gave p'
+    when 'q'
+      puts 'you gave q, bye'
+      run = false
+    when 's'
+      puts 'you gave s'
+      puts "Status: Passed:#{passed.lenth} | Failed: #{failures.lenth} | Total: #{scen_list.length}"
+    when 'r'
+      puts 'you gave r'
+    else
+      puts 'unknown command'
+    end
+  end
+end
+
+loop()
