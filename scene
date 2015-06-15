@@ -1,6 +1,40 @@
 #!/usr/bin/ruby
 # read feature file and :
 
+def loop(scenes, scen_list, feat)
+  run = true
+  idx = 0
+  failures = []
+  passed = []
+  while run
+    puts 'n(ext)|p(rev)|q(uit)|s(tatus)|r(un)'
+    #input = gets
+    input = $stdin.gets.chomp
+    case input
+    when 'n'
+      idx += 1
+      puts "Going forward one scenario: idx now #{idx}"
+      puts "Now at: #{scenes[idx]}"
+    when 'p'
+      idx -= 1
+      puts "Going back one scenario: idx now #{idx}"
+      puts "Now at: #{scenes[idx]}"
+    when 'q'
+      puts 'Quitting...'
+      run = false
+    when 's'
+      # idx + 1 to offset array  start
+      puts "Status: #{idx + 1}/#{scenes.length} | Passed: #{passed.length} | Failed: #{failures.length} | Total: #{scen_list.length}"
+    when 'r'
+      puts "Running #{scenes[idx]}"
+      puts "cmd is cucumber #{feat}:#{scen_list[idx]}"
+      system("cucumber #{feat}:#{scen_list[idx]}")
+    else
+      puts 'unknown command'
+    end
+  end
+end
+
 feat = ARGV[0]
 # List of line numbers that senarios are on
 scen_list = []
@@ -18,34 +52,8 @@ File.open(feat, 'r') do |file|
   end
 end
 
-def loop()
-  run = true
-  counter = 0
-  failures = []
-  passed = []
-  while run
-    puts 'n(ext)|p(rev)|q(uit)|s(tatus)|r(epeat)'
-    #input = gets
-    input = $stdin.gets.chomp
-    case input
-    when 'n'
-      puts "Running #{scenes[counter]}"
-      puts "cmd is cucumber #{feat}:#{scen_list[counter]}"
-      counter += 1
-    when 'p'
-      puts 'you gave p'
-    when 'q'
-      puts 'you gave q, bye'
-      run = false
-    when 's'
-      puts 'you gave s'
-      puts "Status: Passed:#{passed.lenth} | Failed: #{failures.lenth} | Total: #{scen_list.length}"
-    when 'r'
-      puts 'you gave r'
-    else
-      puts 'unknown command'
-    end
-  end
-end
+puts feat
+puts scen_list
+puts scenes
 
-loop()
+loop(scenes, scen_list, feat)
