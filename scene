@@ -12,13 +12,21 @@ def loop(scenes, scen_list, feat)
     input = $stdin.gets.chomp
     case input
     when 'n'
-      idx += 1
-      puts "Going forward one scenario: idx now #{idx}"
-      puts "Now at: #{scenes[idx]}"
+      if idx < (scenes.length - 1)
+        idx += 1
+        puts "Going forward one scenario: idx now #{idx}"
+        puts "Now at: #{scenes[idx]}"
+      else
+        puts "Already at #{idx + 1} of #{scenes.length}"
+      end
     when 'p'
-      idx -= 1
-      puts "Going back one scenario: idx now #{idx}"
-      puts "Now at: #{scenes[idx]}"
+      if idx >= 1
+        idx -= 1
+        puts "Going back one scenario: idx now #{idx}"
+        puts "Now at: #{scenes[idx]}"
+      else
+        puts "Already at beginning"
+      end
     when 'q'
       puts 'Quitting...'
       run = false
@@ -28,7 +36,12 @@ def loop(scenes, scen_list, feat)
     when 'r'
       puts "Running #{scenes[idx]}"
       puts "cmd is cucumber #{feat}:#{scen_list[idx]}"
-      system("cucumber #{feat}:#{scen_list[idx]}")
+      if system("cucumber #{feat}:#{scen_list[idx]}")
+        puts 'Passed... moving on'
+        idx += 1
+      else
+        puts 'Failed...'
+      end
     else
       puts 'unknown command'
     end
