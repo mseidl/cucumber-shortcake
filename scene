@@ -65,8 +65,11 @@ File.open(feat, 'r') do |file|
   end
 end
 
-puts feat
-puts scen_list
-puts scenes
+if scenes.empty?
+  puts 'No Scenarios parsed'
+  exit
+end
+
+puts "Total found: #{scenes.length}"
 
 loop(scenes, scen_list, feat)
