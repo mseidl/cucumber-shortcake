@@ -7,10 +7,30 @@ def loop(scenes, scen_list, feat)
   failures = []
   passed = []
   while run
-    puts 'n(ext)|p(rev)|q(uit)|s(tatus)|r(un)'
+    puts 'n(ext)|p(rev)|q(uit)|s(tatus)|r(un)|t(ill) #|l(ist)'
     #input = gets
     input = $stdin.gets.chomp
     case input
+    when /^t (\d+)/
+      if !scen_list.index($1) 
+        puts "Couldn't find scenario:#{$1}"
+      elsif idx == scen_list.index($1) 
+        puts "Already at scenario:#{$1}"
+      elsif scen_list.index($1) && idx < scen_list.index($1)
+        while idx < scen_list.index($1)
+          if true #system("cucumber #{feat}:#{scen_list[idx]}")
+            puts "#{scenes[idx]} passed}"
+            idx += 1
+          else
+            puts "#{scenes[idx]} failed"
+            break
+          end
+        end
+      else
+        puts "Unknown stuff"
+      end
+    when 'l'
+      puts scen_list
     when 'n'
       if idx < (scenes.length - 1)
         idx += 1
