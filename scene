@@ -37,8 +37,12 @@ def loop(scenes, scen_list, feat)
       puts "Running #{scenes[idx]}"
       puts "cmd is cucumber #{feat}:#{scen_list[idx]}"
       if system("cucumber #{feat}:#{scen_list[idx]}")
-        puts 'Passed... moving on'
-        idx += 1
+        if idx < (scenes.length - 1)
+          idx += 1
+          puts 'Passed... moving on'
+        else
+          puts "Already at #{idx + 1} of #{scenes.length}"
+        end
       else
         puts 'Failed...'
       end
